@@ -12,57 +12,47 @@
 
 <div class="right-panel">
     <div class="compact-header">
-        <h4 style="color: white">📋 Stock de Repuestos</h4>
+        <h4 style="color: white;font-size: 1.5rem">📋 Stock de Repuestos</h4>
     </div>
 
     <div class="search-container">
-        <div class="row g-2 align-items-end">
-            <div class="col-6">
-                <label for="search-name" class="form-label ">Ingrese un código  :</label>
-                <input type="text" class="form-control form-control-sm" style="background-color: rgba(11,0,26,0.11)" id="search-name" placeholder="Ej: jd-496-15r">
-            </div>
+        <div class="row g-4 align-items-end">
             <div class="col-3">
-                <label for="menuTypes" class="form-label">Filtrar por Tipo: </label>
-                <div class="input-group col-3" id="menuTypes">
+                <label for="search-name" class="form-label">Ingrese un código:</label>
+                <input type="text" class="form-control" style="background-color: rgba(11,0,26,0.11);border-color: rgba(0,0,0,0.40);" id="search-name" placeholder="Ej: JD-496-15r">
+            </div>
+            <div class="col-3 ">
+                <label for="menuTypes" class="form-label">Filtrar por Tipo:</label>
+                <div class="input-group" id="menuTypes">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="typeSelected">Seleccione un Tipo</button>
-                    <ul class="dropdown-menu">
-                    </ul>
+                    <ul class="dropdown-menu"></ul>
                 </div>
             </div>
             <div class="col-3">
-                <label for="menuMarks" class="form-label ">Filtrar por Marca: </label>
-                <div class="input-group col-3" id="menuMarks">
+                <label for="menuMarks" class="form-label">Filtrar por Marca:</label>
+                <div class="input-group" id="menuMarks">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="markSelected">Seleccione una Marca</button>
-                    <ul class="dropdown-menu">
-                    </ul>
-                </div>
-            </div>
-            <div class="col-6">
-                <button class="btn btn-success btn-sm w-100" id="btnVerTask" style="background-color:#9b0006">🗑️ Borrar Filtros</button>
-            </div>
-
-
-        </div>
-        <div class="row g-2 mt-1">
-
-            <div class="col-6">
-                <!-- Texto Usuarios en la primera fila -->
-                <div class="w-100">
-                    <small class="text-muted">Repuestos:
-                        <span id="user-count" class="badge bg-primary badge-xs">0</span>
-                    </small>
+                    <ul class="dropdown-menu"></ul>
                 </div>
             </div>
             <div class="col-3">
-                <button class="btn btn-success btn-sm w-100" id="btnArmarPresupuesto" style="background-color: #c98600">💲 Armar Presupuesto</button>
+                <button class="btn btn-success w-100" id="btnVerTask" style="background-color:#9b0006">🗑️ Borrar Filtros</button>
             </div>
-            <div class="col-3">
-                <button class="btn btn-success btn-sm w-100" id="btnEditarRepuesto" style="background-color: #029ec9">📝 Editar Repuesto</button>
-            </div>
-
         </div>
 
-
+        <div class="row g-2 mt-2">
+            <div class="col-6">
+                <small class="text-muted">Repuestos:
+                    <span id="user-count" class="badge bg-primary badge-xs">0</span>
+                </small>
+            </div>
+            <div>
+                <button class="btn btn-success w-100" id="btnArmarPresupuesto" style="background-color: #c98600">💲 Armar Presupuesto</button>
+            </div>
+            <div>
+                <button class="btn btn-success w-100" id="btnEditarRepuesto" style="background-color: #029ec9">📝 Editar Repuesto</button>
+            </div>
+        </div>
     </div>
 
     <div class="table-container">
@@ -79,7 +69,7 @@
         </div>
         <div id="no-data-message" class="text-center p-3 d-none">
             <h6 class="text-muted">📭 Sin datos</h6>
-            <p class="small text-muted">No se encontraron usuarios.</p>
+            <p class="small text-muted">No se encontraron repuestos.</p>
         </div>
         <div id="table-wrapper" class="d-none">
             <div class="table-responsive">
@@ -87,7 +77,10 @@
                     <thead class="table-dark">
                     <tr>
                         <th scope="col" style="width: 15%;">CÓDIGO</th>
-                        <th scope="col" style="width: 40%;">Modelo</th>
+                        <th scope="col" style="width: 30%;">Repuesto</th>
+                        <th scope="col" style="width: 25%;">Marca</th>
+                        <th scope="col" style="width: 40%;">Motor / Modelo</th>
+                        <th scope="col" style="width: 25%;">Medida / Tipo</th>
                         <th scope="col" style="width: 25%;">Precio Unitario</th>
                         <th scope="col" style="width: 25%;">Stock</th>
                         <th scope="col" style="width: 20%;">Acciones</th>

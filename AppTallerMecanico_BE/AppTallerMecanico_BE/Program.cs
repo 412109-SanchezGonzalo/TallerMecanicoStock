@@ -1,4 +1,36 @@
+using AppTallerMecanico_BE.Data.Interfaces;
+using AppTallerMecanico_BE.Data.Repositories;
+using AppTallerMecanico_BE.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+
+
+// 1?? CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+
+// 2?? Inyección de dependencias para repositorios
+var connStr = builder.Configuration.GetConnectionString("TallerStock");
+
+builder.Services.AddScoped<IMarcaRepository>(_ => new MarcaRepository(connStr));
+builder.Services.AddScoped<ITipoRepository>(_ => new TipoRepository(connStr));
+builder.Services.AddScoped<IRepuestoRepository>(_ => new RepuestoRepository(connStr));
+
+
+// 4?? Servicio unificado
+builder.Services.AddScoped<IServicesTaller, ServicesTaller>();
+
+
+// ?? Habilitar explorar directorios (opcional)
+builder.Services.AddDirectoryBrowser();
 
 // Add services to the container.
 builder.Services.AddControllers();
