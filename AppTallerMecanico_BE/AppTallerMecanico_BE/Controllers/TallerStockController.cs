@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AppTallerMecanico_BE.Models;
+using AppTallerMecanico_BE.Services;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,36 +10,79 @@ namespace AppTallerMecanico_BE
     [ApiController]
     public class TallerStockController : ControllerBase
     {
-        // GET: api/<TallerStockController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IConfiguration _configuration;
+        private readonly IServicesTaller _service;
+
+        public TallerStockController(IConfiguration configuration, IServicesTaller services)
         {
-            return new string[] { "value1", "value2" };
+            _configuration = configuration;
+            _service = services;
+        }
+        // MARCAS
+        [HttpGet("Obtener-todos-las-marcas")]
+        public ActionResult<IEnumerable<string>> GetAllMarcasAutos()
+        {
+            try
+            {
+                var result = _service.GetAllMarcas();
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        // GET api/<TallerStockController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // TIPOS
+        [HttpGet("Obtener-todos-los-tipos")]
+        public ActionResult<IEnumerable<string>> GetAllTiposRepuestos()
         {
-            return "value";
+            try
+            {
+                var result = _service.GetAllTipos();
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        // POST api/<TallerStockController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+
+        // REPUESTOS
+
+        [HttpGet("Obtener-todos-los-repuestos")]
+        public ActionResult<IEnumerable<string>> GetAllRepuestosAutos()
         {
+            try
+            {
+                var result = _service.GetAllRepuestos();
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        // PUT api/<TallerStockController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPost("Editar-repuesto")]
+        public ActionResult<bool> UpdateRepuestoAuto([FromBody] UpdateRepuesto repuesto)
         {
+            try
+            {
+                var result = _service.UpdateRepuesto(repuesto);
+                if (result)
+                {
+                    return Ok("Resultado: "+result);
+                }
+                return BadRequest(result);
+
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        // DELETE api/<TallerStockController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
     }
 }
