@@ -18,7 +18,7 @@ namespace AppTallerMecanico_BE.Data.Repositories
             var list = new List<Repuestos>();
             using var conn = new MySqlConnection(_connectionString);
             using var cmd = new MySqlCommand("SELECT r.codigo,t.nombreTipo,m.nombreMarca,r.nombre," +
-                                            "r.medidas,CONCAT('$ ',r.precioUnitario) AS precioUnitario,r.cantidad " +
+                                            "r.medidas,r.precioUnitario AS precioUnitario,r.cantidad " +
                                             "FROM Repuestos r JOIN Marcas m ON r.id_marca  = m.id_marca JOIN Tipos t " +
                                             "ON r.id_tipo = t.id_tipo order by r.nombre asc", conn);
             conn.Open();
