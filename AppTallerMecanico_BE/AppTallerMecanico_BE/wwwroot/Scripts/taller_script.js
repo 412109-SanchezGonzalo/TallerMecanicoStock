@@ -249,6 +249,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (dropdown) {
                     dropdown.hide();
                 }
+                obtenerRepuestosConFiltros(tipoSeleccionadoId,marcaSeleccionadaId);
             } catch (e) {
                 console.log('ℹ️ No se pudo cerrar dropdown automáticamente:', e);
             }
@@ -344,6 +345,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (dropdown3) {
                     dropdown3.hide();
                 }
+                obtenerRepuestosConFiltros(tipoSeleccionadoId,marcaSeleccionadaId);
             } catch (e) {
                 console.log('ℹ️ No se pudo cerrar dropdown automáticamente:', e);
             }
@@ -479,6 +481,55 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             renderTable(filtered);
         });
+    }
+
+    /* == Búsqueda Por Filtros*/
+    const URL_BASE = "https://tallermecanicostock.onrender.com/api/TallerStock/Obtener-todos-los-repuestos-por-filtros";
+
+    /**
+     * Realiza una solicitud GET a la API con filtros opcionales.
+     *  @param {number | null | undefined} idTipo ID del tipo de repuesto (opcional).
+     * @param {number | null | undefined} idMarca ID de la marca (opcional).
+     */
+    async function obtenerRepuestosConFiltros(idTipo, idMarca) {
+        // 1. Crear un objeto para almacenar los parámetros
+        const params = {};
+
+        // 2. Agregar los parámetros solo si son válidos (no nulos/undefined y no cero)
+        // El '0' se usa como valor para "sin filtro" en tu lógica de C#/SQL.
+        if (idTipo && idTipo !== 0) {
+            params.idTipo = idTipo;
+        }
+
+        if (idMarca && idMarca !== 0) {
+            params.idMarca = idMarca;
+        }
+
+        // 3. Convertir el objeto de parámetros en una cadena de consulta (query string)
+        const queryString = new URLSearchParams(params).toString();
+
+        // 4. Construir la URL final
+        // Si queryString está vacío, no se añade el '?'
+        const finalUrl = queryString ? `${URL_BASE}?${queryString}` : URL_BASE;
+
+        console.log("URL de la petición:", finalUrl);
+        showLoading();
+        try {
+            const response = await fetch(finalUrl);
+
+            // Verifica si la respuesta es satisfactoria (código 200-299)
+            if (!response.ok) {
+                // Lanza un error con el código de estado HTTP
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+
+            const dataResult = await response.json();
+            repuestosGlobal = dataResult;
+            renderTable(repuestosGlobal);
+        } catch (error) {
+            showToast("Error al obtener repuestos por filtros:", 'info');
+            throw error; // Re-lanza el error para que el componente que llama lo maneje
+        }
     }
 
 });
