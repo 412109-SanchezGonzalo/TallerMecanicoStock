@@ -2,6 +2,22 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     /* == Definicion de Variables y elementos == */
 
+    // Elementos del Modal Edit
+    const modalEdit = document.getElementById('modal-editRepuesto');
+    const closeEditModalBtn = document.getElementById('closeeditRepuestoModalBtn');
+    const btnConfirmar = document.getElementById('btnConfirmarEdit');
+
+    // Inputs del Modal Edit
+    const inputCodigo = document.getElementById('codigoValue');
+    const inputMotorModelo = document.getElementById('motor-modeloValue');
+    const inputMedidaTipo = document.getElementById('medida-tipoValue');
+    const inputPrecio = document.getElementById('precioValue');
+    const inputStock = document.getElementById('stockValue');
+
+    // Dropdown Buttons del Modal
+    const typeSelectedEditBtn = document.getElementById('typeSelectedEdit');
+    const markSelectedEditBtn = document.getElementById('markSelectedEdit');
+
     const loadingSpinner = document.getElementById('loadingSpinner');
     const loadingElement = document.getElementById('loading');
     const errorElement = document.getElementById('error-message');
@@ -14,6 +30,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     const btnLimpiarFiltros = document.getElementById('btnLimpiarFiltros')
 
+    const btnArmarPresupuesto = document.getElementById('btnArmarPresupuesto');
+    const modalPresupuesto = document.getElementById('modal-Presupuesto');
+
     let repuestosSeleccionados = [];
     let repuestosGlobal = [];
 
@@ -22,6 +41,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let marcaSeleccionadaId = null;
     let marcasDisponibles = [];
+
+    let currentRepuestoIdTipo = null;
+    let currentRepuestoIdMarca = null;
 
     /* == Funciones UI == */
 
@@ -172,6 +194,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             const tdCheck = document.createElement('td');
             tdCheck.appendChild(createCheckboxForRepuesto(r));
 
+            // Crear el botón de Editar
+            const editButton = document.createElement('button');
+            editButton.className = 'btn btn-sm btn-outline-primary btn-edit-repuesto';
+            editButton.title = 'Editar';
+            editButton.innerHTML = '✏️';
+
+            // ⭐️ AÑADIR EVENTO AL BOTÓN DE EDITAR
+            // Pasamos el objeto repuesto completo a la función openModalEdit
+            editButton.addEventListener('click', () => openModalEdit(r));
+
             // Crear el resto de las celdas
             tr.innerHTML = `
                 <td>${r.codigo || 'N/A'}</td>
@@ -181,13 +213,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <td>${r.medida || 'Sin medida'}</td>
                 <td>$ ${r.precioUnitario || '0'}</td>
                 <td>${r.stock || '0'}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-primary" title="Editar">✏️</button>
-                </td>
-            `;
+                <td></td> `;
 
             // Insertar checkbox al inicio de la fila
             tr.insertBefore(tdCheck, tr.firstChild);
+
+            // Insertar botón de editar en la última celda
+            tr.lastElementChild.appendChild(editButton);
 
             tableBody.appendChild(tr);
         });
@@ -425,9 +457,232 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
+    /* == Abrir Modal de Edición == */
+
+    async function openModalEdit(repuesto) {
+
+        const modalEdit = document.getElementById('modal-editRepuesto');
+        if (!modalEdit) return; // Salir si el modal no se encuentra
+
+        console.log("✏️ Abriendo modal para repuesto:", repuesto);
+
+        // 1. Rellenar los campos de texto
+        // Usamos las constantes definidas al inicio del script
+        inputCodigo.value = repuesto.codigo || '';
+        inputMotorModelo.value = repuesto.nombre || '';
+        inputMedidaTipo.value = repuesto.medida || '';
+        inputPrecio.value = repuesto.precioUnitario || '0';
+        inputStock.value = repuesto.stock || '0';
+
+        // 2. Establecer el texto y el ID de los Dropdowns inhabilitados
+        // NOTA: Asume que 'repuesto' tiene idTipo, idMarca, tipo y marca.
+
+        // Tipo de Repuesto
+        typeSelectedEditBtn.textContent = repuesto.tipo || 'Sin Tipo';
+        typeSelectedEditBtn.setAttribute('data-selected', repuesto.idTipo || '');
+
+        // Marca
+        markSelectedEditBtn.textContent = repuesto.marca || 'Sin Marca';
+        markSelectedEditBtn.setAttribute('data-selected', repuesto.idMarca || '');
+
+        // 3. Almacenar los IDs para usarlos en la función de confirmación (si aplica)
+        // Esto es útil si tu API de edición necesita estos IDs
+        currentRepuestoIdTipo = repuesto.idTipo || null;
+        currentRepuestoIdMarca = repuesto.idMarca || null;
+
+        // 4. Mostrar el modal
+        modalEdit.style.display = 'flex';
+    }
+
+    /* == Cierre del Modal Edicion == */
+
+    function closeModalEdit() {
+        if(modalEdit) {
+            modalEdit.style.display = 'none'; // Oculta el modal
+        }
+    }
+
+    // Cerrar con el botón 'X'
+    if(closeEditModalBtn) {
+        closeEditModalBtn.addEventListener('click', closeModalEdit);
+    }
+
+    /* == Confirmar Cambios == */
+
+
+    async function guardarRepuestoEditado() {
+
+        repuestosSeleccionados = [];
+
+        const codigo = inputCodigo.value;
+        const nombre = inputMotorModelo.value;
+        const stock = inputStock.value;
+        const precio = inputPrecio.value;
+
+        // 2. Construir el objeto de datos (Body)
+        const repuestoEditado = {
+
+            codigo: codigo,
+            nombre: nombre,      // Corresponde a Motor/Modelo
+            cantidad: parseInt(stock, 10), // Convertir a número entero
+            precio: parseFloat(precio) // Convertir a número flotante/decimal
+
+        };
+
+        console.log("🛠️ Enviando datos de edición:", repuestoEditado);
+
+        // 3. Ejecutar la solicitud a la API
+        try {
+            const url = 'https://tallermecanicostock.onrender.com/api/TallerStock/Editar-repuesto';
+
+            const response = await fetch(url, {
+                method: 'POST', // o 'POST', dependiendo de la implementación de tu API
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(repuestoEditado)
+            });
+
+            // Manejo de la respuesta
+            if (!response.ok) {
+                // Si la API responde con un error HTTP (4xx o 5xx)
+                const errorText = await response.text();
+                throw new Error(`Error al editar repuesto: HTTP ${response.status}. Detalle: ${errorText}`);
+            }
+
+            showToast('Repuesto editado con éxito. Recargando datos...','success');
+
+            closeModalEdit();
+            await loadAllRepuestos(); // Recargar la tabla con los nuevos datos
+
+        } catch (error) {
+            console.error("❌ Error en la edición:", error);
+            showToast('Error al confirmar edición. ' + error.message, 'error');
+        }
+
+
+    }
+
+    if(btnConfirmar){
+        btnConfirmar.addEventListener('click', (e) => {
+
+            if(confirm('¿ Estas seguro que desea Guardar los Cambios ?'))
+            {
+                // 1. Mostrar Spinner y deshabilitar botón mientras se espera
+                if (loadingSpinner) {
+                    loadingSpinner.classList.remove('d-none');
+                }
+                btnConfirmar.disabled = true;
+
+                // 2. Usar setTimeout para introducir la demora de
+                setTimeout(() => {
+
+                    // 3. Ejecutar la lógica de guardado después del retardo
+                    guardarRepuestoEditado().finally(() => {
+                        // 4. Asegurar que el botón se rehabilite y el spinner se oculte después de la operación (falle o no)
+                        btnConfirmar.disabled = false;
+                        if (loadingSpinner) {
+                            loadingSpinner.classList.add('d-none');
+                        }
+                    });
+
+                }, 1500); // 3000 milisegundos = 3 segundos
+            }
+        })
+    }
+
+
+    /* == Abrir Modal Presupuesto == */
+
+    /**
+     * Abre el modal de presupuesto y llena la tabla con los repuestos seleccionados.
+     * @param {Array<Object>} repuestos Array de objetos de repuestos seleccionados.
+     */
+    function openPresupuestoModal(repuestos) {
+        const tableBody = document.getElementById('presupuestoTableBody');
+        const totalElement = document.getElementById('presupuestoTotal');
+
+        // ⭐️ 1. DEFINIR EL FORMATO DE MONEDA (ESPAÑOL DE ARGENTINA O CHILE, etc.) ⭐️
+        const currencyFormatter = new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS', // O 'ARS', 'CLP', etc., si quieres el símbolo de dólar $
+            minimumFractionDigits: 2,
+        });
+
+        // Limpiar contenido previo
+        tableBody.innerHTML = '';
+        let totalSuma = 0;
+
+        if (!Array.isArray(repuestos) || repuestos.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No has seleccionado ningún repuesto.</td></tr>';
+            totalElement.textContent = `Total: $ 0,00`; // Formato manual para el caso 0
+            // Abrir el modal y salir
+            modalPresupuesto.style.display = 'flex';
+            return;
+        }
+
+        repuestos.forEach(r => {
+            // Asegurar que el precio sea un número para la suma
+            const precio = parseFloat(r.precioUnitario) || 0;
+            totalSuma += precio;
+
+            // ⭐️ 2. APLICAR FORMATO AL PRECIO UNITARIO ⭐️
+            const precioFormateado = currencyFormatter.format(precio).replace('USD', '$');
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+            <td>${r.marca || 'N/A'}</td>
+            <td>${r.tipo || 'N/A'}</td>
+            <td>${r.nombre || 'N/A'}</td>
+            <td style="text-align: right;">${precioFormateado}</td>
+        `;
+            tableBody.appendChild(tr);
+        });
+
+        // ⭐️ 3. APLICAR FORMATO AL TOTAL ⭐️
+        const totalFormateado = currencyFormatter.format(totalSuma).replace('USD', '$');
+        totalElement.textContent = `Total: ${totalFormateado}`;
+
+        // Mostrar el modal
+        modalPresupuesto.style.display = 'flex';
+    }
+
+    if (btnArmarPresupuesto) {
+        btnArmarPresupuesto.addEventListener('click', () => {
+            if(loadingSpinner){
+                loadingSpinner.classList.remove('d-none');
+            }
+            try {
+                openPresupuestoModal(repuestosSeleccionados);
+            } catch (error) {
+                showToast('Error al calcular presupuesto','error');
+            } finally {
+                if(loadingSpinner){
+                    loadingSpinner.classList.add('d-none');
+                }
+            }
+
+        });
+    }
+    // Función para cerrar el modal (si no la tienes):
+    function closePresupuestoModal() {
+        if (modalPresupuesto) {
+            repuestosSeleccionados = [];
+            modalPresupuesto.style.display = 'none';
+            renderTable(repuestosGlobal);
+        }
+    }
+    // Event listener para el botón de cierre (btn-close)
+    const closePresupuestoModalBtn = document.getElementById('closepresupuestoModalBtn');
+    if (closePresupuestoModalBtn) {
+        closePresupuestoModalBtn.addEventListener('click', closePresupuestoModal);
+    }
+
+
     /* == Inicializar y Cargar Datos == */
 
     try {
+        showToast('Iniciando Sistema ...','info')
         await loadAllRepuestos();
         await cargarTipos();
         await cargarMarcas();
@@ -437,6 +692,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (loadingSpinner) {
             loadingSpinner.classList.add('d-none');
         }
+        showToast('👋 Bienvenido !','success');
     }
 
     /* == Limpiar Filtros ==*/

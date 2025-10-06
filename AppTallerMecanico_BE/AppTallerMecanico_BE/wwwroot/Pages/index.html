@@ -3,99 +3,195 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../Images/logo_AppTaller.png">
     <link rel="stylesheet" href="../Styles/taller_styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <title>Taller | Stock</title>
 </head>
 <body>
 
-<div class="right-panel">
-    <div class="compact-header">
-        <h4 style="color: white;font-size: 1.5rem">📋 Stock de Repuestos</h4>
-    </div>
+    <div class="right-panel">
+        <div class="compact-header">
+            <h4 style="color: white;font-size: 1.5rem">📋 Stock de Repuestos</h4>
+        </div>
 
-    <div class="search-container">
-        <div class="row g-4 align-items-end">
-            <div class="col-3">
-                <label for="search-name" class="form-label">Ingrese un código:</label>
-                <input type="text" class="form-control" style="background-color: rgba(11,0,26,0.11);border-color: rgba(0,0,0,0.40);" id="search-name" placeholder="Ej: JD-496-15r">
-            </div>
-            <div class="col-3">
-                <label for="menuTypes" class="form-label">Filtrar por Tipo:</label>
-                <div class="input-group" id="menuTypes">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="typeSelected">Seleccione un Tipo</button>
-                    <ul class="dropdown-menu"></ul>
+        <div class="search-container">
+            <div class="row g-4 align-items-end">
+                <div class="col-3">
+                    <label for="search-name" class="form-label">Ingrese un código:</label>
+                    <input type="text" class="form-control" style="background-color: rgba(11,0,26,0.11);border-color: rgba(0,0,0,0.40);" id="search-name" placeholder="Ej: JD-496-15r">
+                </div>
+                <div class="col-3">
+                    <label for="menuTypes" class="form-label">Filtrar por Tipo:</label>
+                    <div class="input-group" id="menuTypes">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="typeSelected">Seleccione un Tipo</button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <label for="menuMarks" class="form-label">Filtrar por Marca:</label>
+                    <div class="input-group" id="menuMarks">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="markSelected">Seleccione una Marca</button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <button class="btn btn-success w-100" id="btnLimpiarFiltros" style="background-color:#9b0006">🗑️ Borrar Filtros</button>
                 </div>
             </div>
-            <div class="col-3">
-                <label for="menuMarks" class="form-label">Filtrar por Marca:</label>
-                <div class="input-group" id="menuMarks">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="markSelected">Seleccione una Marca</button>
-                    <ul class="dropdown-menu"></ul>
+
+            <div class="row g-2 mt-2">
+                <div class="col-6">
+                    <small class="text-muted">Repuestos:
+                        <span id="repuestos-count" class="badge bg-primary badge-xs">0</span>
+                    </small>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-success w-100" id="btnArmarPresupuesto" style="background-color: #c98600">💲 Armar Presupuesto</button>
                 </div>
             </div>
-            <div class="col-3">
-                <button class="btn btn-success w-100" id="btnLimpiarFiltros" style="background-color:#9b0006">🗑️ Borrar Filtros</button>
+        </div>
+
+        <div class="table-container">
+            <!-- Loading interno de la tabla -->
+            <div id="loading" class="loading d-none">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                </div>
+                <p class="mt-2 small">Cargando repuestos...</p>
             </div>
-        </div>
 
-        <div class="row g-2 mt-2">
-            <div class="col-6">
-                <small class="text-muted">Repuestos:
-                    <span id="repuestos-count" class="badge bg-primary badge-xs">0</span>
-                </small>
+            <!-- Mensaje de error -->
+            <div id="error-message" class="error-message d-none">
+                <h6>❌ Error</h6>
+                <p class="small" id="error-details"></p>
+                <button class="btn btn-outline-primary btn-sm" id="btnRetry">🔄 Reintentar</button>
             </div>
-            <div class="col-6">
-                <button class="btn btn-success w-100" id="btnArmarPresupuesto" style="background-color: #c98600">💲 Armar Presupuesto</button>
+
+            <!-- Sin datos -->
+            <div id="no-data-message" class="text-center p-3 d-none">
+                <h6 class="text-muted">📭 Sin datos</h6>
+                <p class="small text-muted">No se encontraron repuestos.</p>
             </div>
-        </div>
-    </div>
 
-    <div class="table-container">
-        <!-- Loading interno de la tabla -->
-        <div id="loading" class="loading d-none">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Cargando...</span>
-            </div>
-            <p class="mt-2 small">Cargando repuestos...</p>
-        </div>
-
-        <!-- Mensaje de error -->
-        <div id="error-message" class="error-message d-none">
-            <h6>❌ Error</h6>
-            <p class="small" id="error-details"></p>
-            <button class="btn btn-outline-primary btn-sm" id="btnRetry">🔄 Reintentar</button>
-        </div>
-
-        <!-- Sin datos -->
-        <div id="no-data-message" class="text-center p-3 d-none">
-            <h6 class="text-muted">📭 Sin datos</h6>
-            <p class="small text-muted">No se encontraron repuestos.</p>
-        </div>
-
-        <!-- Tabla -->
-        <div id="table-wrapper">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover compact-table">
-                    <thead class="table-dark">
-                    <tr>
-                        <th scope="col" style="width: 5%;"></th>
-                        <th scope="col" style="width: 15%;">CÓDIGO</th>
-                        <th scope="col" style="width: 15%;">Repuesto</th>
-                        <th scope="col" style="width: 15%;">Marca</th>
-                        <th scope="col" style="width: 15%;">Motor / Modelo</th>
-                        <th scope="col" style="width: 10%;">Medida / Tipo</th>
-                        <th scope="col" style="width: 10%;">Precio Unitario</th>
-                        <th scope="col" style="width: 5%;">Stock</th>
-                        <th scope="col" style="width: 10%;">Acciones</th>
-                    </tr>
-                    </thead>
-                    <tbody id="table-body"></tbody>
-                </table>
+            <!-- Tabla -->
+            <div id="table-wrapper">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover compact-table">
+                        <thead class="table-dark">
+                        <tr>
+                            <th scope="col" style="width: 5%;"></th>
+                            <th scope="col" style="width: 15%;">CÓDIGO</th>
+                            <th scope="col" style="width: 15%;">Repuesto</th>
+                            <th scope="col" style="width: 15%;">Marca</th>
+                            <th scope="col" style="width: 15%;">Motor / Modelo</th>
+                            <th scope="col" style="width: 10%;">Medida / Tipo</th>
+                            <th scope="col" style="width: 10%;">Precio Unitario</th>
+                            <th scope="col" style="width: 5%;">Stock</th>
+                            <th scope="col" style="width: 10%;">Acciones</th>
+                        </tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Modal de Editar Repuesto -->
+    <div class="modal-overlay-editRepuesto" id="modal-editRepuesto">
+        <div class="modal-content-location">
+            <div class="modal-header-container">
+                <h2>Editar Repuesto</h2>
+                <button type="button" class="btn-close" id="closeeditRepuestoModalBtn" aria-label="Close"></button>
+            </div>
+            <form>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label for="codigoValue" class="form-label">Codigo</label>
+                        <input type="input" class="form-control" id="codigoValue" aria-describedby="codigoValor" disabled>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="menuTypesEdit" class="form-label">Tipo de Repuesto :</label>
+                    <div class="input-group" id="menuTypesEdit">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" id="typeSelectedEdit" disabled></button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="menuMarksEdit" class="form-label">Marca :</label>
+                    <div class="input-group" id="menuMarksEdit">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false" id="markSelectedEdit" disabled></button>
+                        <ul class="dropdown-menu"></ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="motor-modeloValue" class="form-label">Motor / Modelo :</label>
+                        <input type="input" class="form-control" id="motor-modeloValue" aria-describedby="motor-modeloValue">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label for="medida-tipoValue" class="form-label">Medida / Tipo :</label>
+                        <input type="input" class="form-control" id="medida-tipoValue" aria-describedby="medida-tipoValue" disabled>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label for="precioValue" class="form-label">Precio Unitario (En pesos $) :</label>
+                        <input type="input" class="form-control" id="precioValue" aria-describedby="precioValue">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label for="stockValue" class="form-label">Stock (En Unidades) :</label>
+                        <input type="number" class="form-control" id="stockValue" aria-describedby="stockValue">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="background-color: #2e7700" id="btnConfirmarEdit">Confirmar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Armar Presupuesto-->
+    <div class="modal-overlay-Presupuesto" id="modal-Presupuesto">
+        <div class="modal-content-location">
+            <div class="modal-header-container">
+                <h2>Presupuesto</h2>
+                <button type="button" class="btn-close" id="closepresupuestoModalBtn" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="table-responsive mb-4">
+                    <table class="table table-striped table-sm" id="presupuestoTable">
+                        <thead class="table-dark">
+                        <tr>
+                            <th scope="col" style="width: 15%;">Marca</th>
+                            <th scope="col" style="width: 15%;">Repuesto</th>
+                            <th scope="col" style="width: 15%;">Motor / Modelo</th>
+                            <th scope="col" style="width: 15%; text-align: right;">Precio Unitario  </th>
+                        </tr>
+                        </thead>
+                        <tbody id="presupuestoTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="presupuestoTotalContainer" class="text-end border-top pt-3">
+                    <h4 id="presupuestoTotal" class="fw-bold">Total: $ 0.00</h4>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <!-- Spinner de carga general (pantalla completa) -->
 <div id="loadingSpinner" class="position-fixed top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center bg-dark bg-opacity-75" style="z-index: 2000;">
