@@ -46,13 +46,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showTable(count) {
-        console.log('📊 Mostrando tabla con', count, 'elementos');
-        loadingElement.classList.add('d-none');
-        errorElement.classList.add('d-none');
-        noDataElement.classList.add('d-none');
-        tableWrapper.classList.remove('d-none');
-        userCount.textContent = count;
+        const wrapper = document.getElementById("table-wrapper");
+        const noData = document.getElementById("no-data-message");
+        const errorMessage = document.getElementById("error-message");
+        const loading = document.getElementById("loading");
+
+        // Ocultar mensajes
+        noData.classList.add("d-none");
+        errorMessage.classList.add("d-none");
+        loading.classList.add("d-none");
+
+        // Mostrar tabla
+        wrapper.classList.remove("d-none");
+
+        // Actualizar contador
+        document.getElementById("repuestos-count").innerText = count;
     }
+
 
     function clearTable() {
         console.log('🧹 Limpiando tabla...');
@@ -111,39 +121,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     function renderTable(repuestos) {
-        tableBody.innerHTML = ''; // Limpiar la tabla antes de agregar filas
+        const tableBody = document.getElementById("table-body");
+        tableBody.innerHTML = ""; // limpiar filas previas
 
-        if (repuestos.length === 0) {
-            showNoData(); // Mostrar mensaje si no hay repuestos
+        if (!Array.isArray(repuestos) || repuestos.length === 0) {
+            showNoData();
             return;
         }
 
-        repuestos.forEach(repuesto => {
-            const tr = document.createElement('tr');
+        repuestos.forEach(r => {
+            const tr = document.createElement("tr");
             tr.innerHTML = `
-            <td><span class="badge bg-secondary">${repuesto.codigo || 'N/A'}</span></td>
-            <td><strong>${repuesto.tipo || 'Sin tipo'}</strong></td>
-            <td><code>${repuesto.marca || 'Sin marca'}</code></td>
-            <td><code>${repuesto.nombre || 'Sin motor / modelo'}</code></td>
-            <td><code>${repuesto.medida || 'S/M'}</code></td>
-            <td><code>${repuesto.precioUnitario || 'Sin precio'}</code></td>
-            <td><code>${repuesto.stock || 'Sin stock'}</code></td>
-            <td></td> <!-- Aquí se agregará el checkbox -->
+            <td>${r.codigo}</td>
+            <td>${r.nombre}</td>
+            <td>${r.marca}</td>
+            <td>${r.tipo}</td>
+            <td>${r.medida}</td>
+            <td>$ ${r.precioUnitario}</td>
+            <td>${r.stock}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary">✏️</button>
+                <button class="btn btn-sm btn-outline-danger">🗑️</button>
+            </td>
         `;
-
-            // Crear el checkbox para este usuario
-            const check = createCheckboxForRepuesto(repuesto);
-
-            // Añadir el checkbox a la última columna de la fila
-            const cell = tr.querySelector('td:last-child');
-            cell.appendChild(check);
-
-            // Agregar la fila a la tabla
             tableBody.appendChild(tr);
         });
 
-        showTable(repuestos.length); // Mostrar la tabla
+        showTable(repuestos.length);
     }
+
 
 
     let repuestosGlobal = [];
