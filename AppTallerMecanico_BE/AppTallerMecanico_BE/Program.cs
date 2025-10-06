@@ -59,3 +59,4 @@ app.MapControllers();
 app.MapFallbackToFile("Pages/index.html");
 
 app.Run();
+
