@@ -30,6 +30,10 @@ namespace AppTallerMecanico_BE.Services
         {
             return _repuestoRepository.GetAllRepuestos();
         }
+        public IEnumerable<Repuestos> GetAllRepuestosByFilters(int? idTipo = null, int? idMarca = null)
+        {
+            return _repuestoRepository.GetAllRepuestosByFilters(idTipo, idMarca);
+        }
 
         public bool UpdateRepuesto(UpdateRepuesto repuesto)
         {

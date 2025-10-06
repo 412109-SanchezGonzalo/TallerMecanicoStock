@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../Styles/taller_styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <title> Taller | Stock</title>
+    <title>Taller | Stock</title>
 </head>
 <body>
 
@@ -21,7 +20,7 @@
                 <label for="search-name" class="form-label">Ingrese un código:</label>
                 <input type="text" class="form-control" style="background-color: rgba(11,0,26,0.11);border-color: rgba(0,0,0,0.40);" id="search-name" placeholder="Ej: JD-496-15r">
             </div>
-            <div class="col-3 ">
+            <div class="col-3">
                 <label for="menuTypes" class="form-label">Filtrar por Tipo:</label>
                 <div class="input-group" id="menuTypes">
                     <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="typeSelected">Seleccione un Tipo</button>
@@ -36,7 +35,7 @@
                 </div>
             </div>
             <div class="col-3">
-                <button class="btn btn-success w-100" id="btnVerTask" style="background-color:#9b0006">🗑️ Borrar Filtros</button>
+                <button class="btn btn-success w-100" id="btnLimpiarFiltros" style="background-color:#9b0006">🗑️ Borrar Filtros</button>
             </div>
         </div>
 
@@ -46,44 +45,49 @@
                     <span id="repuestos-count" class="badge bg-primary badge-xs">0</span>
                 </small>
             </div>
-            <div>
+            <div class="col-6">
                 <button class="btn btn-success w-100" id="btnArmarPresupuesto" style="background-color: #c98600">💲 Armar Presupuesto</button>
-            </div>
-            <div>
-                <button class="btn btn-success w-100" id="btnEditarRepuesto" style="background-color: #029ec9">📝 Editar Repuesto</button>
             </div>
         </div>
     </div>
 
     <div class="table-container">
+        <!-- Loading interno de la tabla -->
         <div id="loading" class="loading d-none">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Cargando...</span>
             </div>
-            <p class="mt-2 small">Cargando...</p>
+            <p class="mt-2 small">Cargando repuestos...</p>
         </div>
+
+        <!-- Mensaje de error -->
         <div id="error-message" class="error-message d-none">
             <h6>❌ Error</h6>
             <p class="small" id="error-details"></p>
             <button class="btn btn-outline-primary btn-sm" id="btnRetry">🔄 Reintentar</button>
         </div>
+
+        <!-- Sin datos -->
         <div id="no-data-message" class="text-center p-3 d-none">
             <h6 class="text-muted">📭 Sin datos</h6>
             <p class="small text-muted">No se encontraron repuestos.</p>
         </div>
+
+        <!-- Tabla -->
         <div id="table-wrapper">
             <div class="table-responsive">
                 <table class="table table-striped table-hover compact-table">
                     <thead class="table-dark">
                     <tr>
+                        <th scope="col" style="width: 5%;"></th>
                         <th scope="col" style="width: 15%;">CÓDIGO</th>
-                        <th scope="col" style="width: 30%;">Repuesto</th>
-                        <th scope="col" style="width: 25%;">Marca</th>
-                        <th scope="col" style="width: 40%;">Motor / Modelo</th>
-                        <th scope="col" style="width: 25%;">Medida / Tipo</th>
-                        <th scope="col" style="width: 25%;">Precio Unitario</th>
-                        <th scope="col" style="width: 25%;">Stock</th>
-                        <th scope="col" style="width: 20%;">Acciones</th>
+                        <th scope="col" style="width: 15%;">Repuesto</th>
+                        <th scope="col" style="width: 15%;">Marca</th>
+                        <th scope="col" style="width: 15%;">Motor / Modelo</th>
+                        <th scope="col" style="width: 10%;">Medida / Tipo</th>
+                        <th scope="col" style="width: 10%;">Precio Unitario</th>
+                        <th scope="col" style="width: 5%;">Stock</th>
+                        <th scope="col" style="width: 10%;">Acciones</th>
                     </tr>
                     </thead>
                     <tbody id="table-body"></tbody>
@@ -91,29 +95,29 @@
             </div>
         </div>
     </div>
-
-
-    <!-- Spinner de Loading -->
-
-    <div id="loadingSpinner" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-50" style="z-index: 2000;">
-        <div class="spinner-border text-light" role="status">
-            <span class="visually-hidden">Cargando ...</span>
-        </div>
-    </div>
-
-    <!-- Mensaje Toast -->
-
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="d-flex">
-                <div class="toast-body" id="toast-message">
-                    <!-- El mensaje se setea desde JS -->
-                </div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
-
 </div>
+
+<!-- Spinner de carga general (pantalla completa) -->
+<div id="loadingSpinner" class="position-fixed top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center bg-dark bg-opacity-75" style="z-index: 2000;">
+    <div class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</div>
+
+<!-- Toast para notificaciones -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toast-message">
+                <!-- El mensaje se setea desde JS -->
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script src="../Scripts/taller_script.js"></script>
 </body>
 </html>

@@ -131,3 +131,20 @@ body {
     max-height: 250px;
     overflow-y: auto;
 }
+
+/* === LOADING Y ERRORES === */
+.loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+.spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.error-message {
+    color: #dc3545;
+    text-align: center;
+    padding: 1.5rem;
+}

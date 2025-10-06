@@ -12,6 +12,7 @@ namespace AppTallerMecanico_BE.Services
 
         // REPUESTOS
         IEnumerable<Repuestos> GetAllRepuestos();
+        IEnumerable<Repuestos> GetAllRepuestosByFilters(int? idTipo = null, int? idMarca = null);
         bool UpdateRepuesto(UpdateRepuesto repuesto);
     }
 }

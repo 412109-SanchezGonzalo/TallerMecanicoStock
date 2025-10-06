@@ -39,6 +39,41 @@ namespace AppTallerMecanico_BE.Data.Repositories
             return list;
         }
 
+
+        public IEnumerable<Repuestos> GetAllRepuestosByFilters(int? idTipo = null, int? idMarca = null)
+        {
+            var list = new List<Repuestos>();
+            using var conn = new MySqlConnection(_connectionString);
+            using var cmd = new MySqlCommand("SELECT r.codigo,t.nombreTipo,m.nombreMarca,r.nombre," +
+                                            "r.medidas,r.precioUnitario AS precioUnitario,r.cantidad " +
+                                            "FROM Repuestos r JOIN Marcas m ON r.id_marca  = m.id_marca JOIN Tipos t " +
+                                            "ON r.id_tipo = t.id_tipo " +
+                                            "WHERE (@idTipo IS NULL OR @idTipo = 0 OR r.id_tipo = @idTipo) " +
+                                            "AND (@idMarca IS NULL OR @idMarca = 0 OR r.id_marca = @idMarca) " +
+                                            "order by r.nombre asc", conn);
+
+            cmd.Parameters.AddWithValue("@idTipo", idTipo.HasValue ? (object)idTipo.Value : DBNull.Value);
+            cmd.Parameters.AddWithValue("@idMarca", idMarca.HasValue ? (object)idMarca.Value : DBNull.Value);
+
+            conn.Open();
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new Repuestos
+                {
+                    Codigo = reader.GetString(reader.GetOrdinal("codigo")),
+                    Marca = reader.GetString(reader.GetOrdinal("nombreMarca")),
+                    Tipo = reader.GetString(reader.GetOrdinal("nombreTipo")),
+                    Nombre = reader.GetString(reader.GetOrdinal("nombre")),
+                    Medida = reader.GetString(reader.GetOrdinal("medidas")),
+                    PrecioUnitario = reader.GetDouble(reader.GetOrdinal("precioUnitario")),
+                    Stock = reader.GetInt32(reader.GetOrdinal("cantidad"))
+                });
+            }
+            return list;
+        }
+        
+
         public bool UpdateRepuesto(UpdateRepuesto repuesto)
         {
             using var conn = new MySqlConnection(_connectionString);

@@ -68,6 +68,21 @@ namespace AppTallerMecanico_BE
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
+        [HttpGet("Obtener-todos-los-repuestos-por-filtros")]
+        public ActionResult<IEnumerable<string>> GetAllRepuestosAutosByFilters([FromQuery] int? idTipo=null, [FromQuery] int? idMarca =null)
+        {
+            try
+            {
+                var result = _service.GetAllRepuestosByFilters(idTipo,idMarca);
+                if (result == null)
+                {
+                    return NotFound();
+                }
+                return Ok(result);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
         [HttpPost("Editar-repuesto")]
         public ActionResult<bool> UpdateRepuestoAuto([FromBody] UpdateRepuesto repuesto)
         {
