@@ -712,6 +712,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             inputName.value = '';
         }
 
+        marcaSeleccionadaId = null;
+        tipoSeleccionadoId = null;
+
         loadAllRepuestos();
 
     })
@@ -748,6 +751,10 @@ document.addEventListener("DOMContentLoaded", async function () {
      * @param {number | null | undefined} idMarca ID de la marca (opcional).
      */
     async function obtenerRepuestosConFiltros(idTipo, idMarca) {
+
+        searchCodigoInput.value = '';
+
+
         // 1. Crear un objeto para almacenar los parámetros
         const params = {};
 
